@@ -13,6 +13,8 @@ flowchart LR
   Retrieval --> DB
   Worker --> Provider["Configurable AI provider"]
   Provider --> Validation["Schema + citation validation"]
+  Provider --> Evaluation["Versioned evaluation gate"]
+  Retrieval --> Evaluation
   Validation --> Draft["Editable draft plan"]
   Draft --> Teacher
   Teacher --> Outcome["Audited intervention outcome"]
@@ -41,6 +43,7 @@ flowchart LR
 - `Ai` exposes a small `generate`/`embed` interface, keeping provider payloads out of domain services.
 - `Investigations` owns workflow state and grounding validation.
 - `InterventionOutcomes` owns the approved-plan feedback loop, action completion, follow-up mastery synchronization, and signal closure.
+- `Evaluations` owns version-controlled synthetic cases, deterministic retrieval and AI scoring, persisted run provenance, threshold enforcement, and regression reports.
 - `Audit` records security- and decision-relevant transitions.
 - Pundit policies constrain application reads and writes to a user's organizations.
 

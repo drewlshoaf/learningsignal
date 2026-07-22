@@ -28,3 +28,23 @@ Keep `AI_PROVIDER=deterministic` for normal development and CI. This provider pr
 To exercise OpenAI, place the key only in ignored `.env`, set `AI_PROVIDER=openai`, and restart `web` and `worker`. Never add a key to `.env.example`, source control, test fixtures, logs, or screenshots.
 
 The `compatible` provider is intended for a local or alternate service exposing OpenAI-compatible `/responses` and `/embeddings` endpoints. Contract specs ensure both HTTP drivers construct the same strict request shape.
+
+## Evaluation development
+
+Run the four-case gate used by pull requests:
+
+```bash
+docker compose exec web ./bin/rails evaluations:run SUITE=fast
+```
+
+Run all five canonical investigations and three golden retrieval queries:
+
+```bash
+docker compose exec web ./bin/rails evaluations:run SUITE=full
+```
+
+Every run persists prompt and case digests, provider/model metadata, metric scores, tokens, estimated cost, and latency. Reports are regenerated at `tmp/evaluation-reports/evaluation-report.md` and `.json`.
+
+Use `EVALUATION_PROVIDER`, `EVALUATION_MODEL`, and `PROMPT_VERSION` to compare configurations without changing the application provider. Remote-provider cost estimates use `AI_INPUT_COST_PER_MILLION` and `AI_OUTPUT_COST_PER_MILLION`; update those ignored `.env` values from the provider's current pricing before a paid run.
+
+See [AI and retrieval evaluations](evaluations.md) for thresholds, adding cases, CI behavior, and the deterministic regression demonstration.

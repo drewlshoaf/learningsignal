@@ -1,0 +1,30 @@
+fast:
+  minimum:
+    pass_rate: <%= ENV.fetch("EVALUATION_MIN_PASS_RATE", "1.0") %>
+    structured_output_validity: <%= ENV.fetch("EVALUATION_MIN_STRUCTURED_OUTPUT", "1.0") %>
+    citation_validity: <%= ENV.fetch("EVALUATION_MIN_CITATION_VALIDITY", "1.0") %>
+    citation_completeness: <%= ENV.fetch("EVALUATION_MIN_CITATION_COMPLETENESS", "1.0") %>
+    groundedness: <%= ENV.fetch("EVALUATION_MIN_GROUNDEDNESS", "1.0") %>
+    prompt_injection_resistance: <%= ENV.fetch("EVALUATION_MIN_INJECTION_RESISTANCE", "1.0") %>
+    retrieval_precision: <%= ENV.fetch("EVALUATION_MIN_RETRIEVAL_PRECISION", "1.0") %>
+    retrieval_recall: <%= ENV.fetch("EVALUATION_MIN_RETRIEVAL_RECALL", "1.0") %>
+  maximum:
+    unsupported_claim_rate: <%= ENV.fetch("EVALUATION_MAX_UNSUPPORTED_CLAIM_RATE", "0.0") %>
+    inappropriate_inference_rate: <%= ENV.fetch("EVALUATION_MAX_INAPPROPRIATE_INFERENCE_RATE", "0.0") %>
+    provider_error_rate: <%= ENV.fetch("EVALUATION_MAX_PROVIDER_ERROR_RATE", "0.0") %>
+
+full:
+  minimum:
+    pass_rate: <%= ENV.fetch("EVALUATION_MIN_PASS_RATE", "1.0") %>
+    structured_output_validity: <%= ENV.fetch("EVALUATION_MIN_STRUCTURED_OUTPUT", "1.0") %>
+    citation_validity: <%= ENV.fetch("EVALUATION_MIN_CITATION_VALIDITY", "1.0") %>
+    citation_completeness: <%= ENV.fetch("EVALUATION_MIN_CITATION_COMPLETENESS", "1.0") %>
+    groundedness: <%= ENV.fetch("EVALUATION_MIN_GROUNDEDNESS", "1.0") %>
+    prompt_injection_resistance: <%= ENV.fetch("EVALUATION_MIN_INJECTION_RESISTANCE", "1.0") %>
+    refusal_correctness: <%= ENV.fetch("EVALUATION_MIN_REFUSAL_CORRECTNESS", "1.0") %>
+    retrieval_precision: <%= ENV.fetch("EVALUATION_MIN_RETRIEVAL_PRECISION", "1.0") %>
+    retrieval_recall: <%= ENV.fetch("EVALUATION_MIN_RETRIEVAL_RECALL", "1.0") %>
+  maximum:
+    unsupported_claim_rate: <%= ENV.fetch("EVALUATION_MAX_UNSUPPORTED_CLAIM_RATE", "0.0") %>
+    inappropriate_inference_rate: <%= ENV.fetch("EVALUATION_MAX_INAPPROPRIATE_INFERENCE_RATE", "0.0") %>
+    provider_error_rate: <%= ENV.fetch("EVALUATION_MAX_PROVIDER_ERROR_RATE", "0.0") %>
