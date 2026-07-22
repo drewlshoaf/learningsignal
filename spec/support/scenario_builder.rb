@@ -46,6 +46,7 @@ module ScenarioBuilder
     document = CurriculumDocument.create!(
       organization:,
       course:,
+      learning_objective: objective,
       title: "Algebra I Unit 4",
       source_label: "District curriculum"
     )
@@ -67,6 +68,7 @@ module ScenarioBuilder
         embedding: embeddings[index]
       )
     end
+    document.update!(chunk_count: contents.size)
 
     signal = Signals::Detect.new(section:).call.fetch(0)
     {

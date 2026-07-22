@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :organizations, through: :memberships
   has_many :sections, foreign_key: :teacher_id, inverse_of: :teacher
+  has_many :uploaded_curriculum_documents, class_name: "CurriculumDocument", foreign_key: :uploaded_by_id, inverse_of: :uploaded_by
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

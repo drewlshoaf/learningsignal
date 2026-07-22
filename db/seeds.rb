@@ -66,6 +66,7 @@ document = CurriculumDocument.find_or_create_by!(organization: organization, cou
   record.source_label = "Northstar Mathematics Curriculum, Unit 2"
   record.status = "ready"
 end
+document.update!(learning_objective: objective, status: "ready")
 
 chunks = [
   [ "Lesson 2.3", "Slope describes the rate of change between two quantities. From two points, subtract the y-values to find rise and subtract the x-values in the same order to find run. The y-intercept is a different quantity: it is where the line crosses the vertical axis." ],
@@ -83,6 +84,7 @@ end
 provider = Ai::Providers::DeterministicProvider.new
 embeddings = provider.embed(model: Ai::Configuration.embedding_model, inputs: chunks.map(&:content))
 chunks.zip(embeddings).each { |chunk, embedding| chunk.update!(embedding: embedding) if chunk.embedding.blank? }
+document.update!(chunk_count: chunks.size)
 
 Signals::Detect.new(section: section).call
 

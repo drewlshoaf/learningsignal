@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
 
   root "dashboard#index"
+  resources :curriculum_documents, only: %i[index show new create] do
+    post :reprocess, on: :member
+  end
   resources :student_signals, only: :show do
     resources :investigations, only: :create, shallow: true
   end

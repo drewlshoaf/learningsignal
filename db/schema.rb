@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_121000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -103,19 +103,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_121000) do
   end
 
   create_table "curriculum_documents", force: :cascade do |t|
+    t.integer "chunk_count", default: 0, null: false
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
+    t.text "failure_message"
+    t.string "file_checksum"
+    t.bigint "learning_objective_id"
     t.bigint "organization_id", null: false
+    t.integer "page_count", default: 0, null: false
+    t.datetime "processed_at"
+    t.datetime "processing_started_at"
     t.string "source_label", null: false
     t.string "status", default: "ready", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.bigint "uploaded_by_id"
     t.index ["course_id"], name: "index_curriculum_documents_on_course_id"
+    t.index ["learning_objective_id"], name: "index_curriculum_documents_on_learning_objective_id"
+    t.index ["organization_id", "file_checksum"], name: "index_curriculum_documents_on_tenant_checksum", unique: true, where: "(file_checksum IS NOT NULL)"
     t.index ["organization_id"], name: "index_curriculum_documents_on_organization_id"
+    t.index ["uploaded_by_id"], name: "index_curriculum_documents_on_uploaded_by_id"
   end
 
   create_table "document_chunks", force: :cascade do |t|
     t.text "content", null: false
+    t.string "content_checksum", null: false
     t.datetime "created_at", null: false
     t.bigint "curriculum_document_id", null: false
     t.vector "embedding", limit: 1536
@@ -125,6 +137,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_121000) do
     t.bigint "organization_id", null: false
     t.integer "token_count", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["content_checksum"], name: "index_document_chunks_on_content_checksum"
     t.index ["curriculum_document_id"], name: "index_document_chunks_on_curriculum_document_id"
     t.index ["learning_objective_id"], name: "index_document_chunks_on_learning_objective_id"
     t.index ["organization_id", "learning_objective_id"], name: "idx_on_organization_id_learning_objective_id_9102f153fe"
@@ -390,7 +403,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_121000) do
   add_foreign_key "courses", "organizations"
   add_foreign_key "courses", "schools"
   add_foreign_key "curriculum_documents", "courses"
+  add_foreign_key "curriculum_documents", "learning_objectives"
   add_foreign_key "curriculum_documents", "organizations"
+  add_foreign_key "curriculum_documents", "users", column: "uploaded_by_id"
   add_foreign_key "document_chunks", "curriculum_documents"
   add_foreign_key "document_chunks", "learning_objectives"
   add_foreign_key "document_chunks", "organizations"
