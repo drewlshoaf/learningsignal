@@ -11,6 +11,8 @@ docker compose down
 
 Compose creates the PostgreSQL databases and MinIO bucket automatically. Named volumes preserve database and object-storage state between restarts.
 
+Curriculum uploads accept text-based PDFs up to 25 MB. The web process stores the source in MinIO and enqueues extraction on the worker. Poppler's `pdftotext` runs inside the application image; scanned image-only PDFs fail visibly until an OCR pipeline is added. Duplicate files are rejected within the same organization using the Active Storage checksum.
+
 To rebuild synthetic data without deleting local records, rerun `db:seed`; the seed script is idempotent. To intentionally reset the local databases, use the Rails database tasks rather than deleting Docker volumes unless the data loss is desired.
 
 ## Provider development

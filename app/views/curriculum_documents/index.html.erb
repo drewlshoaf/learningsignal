@@ -1,0 +1,42 @@
+<% content_for :title, "Curriculum · LearningSignal" %>
+
+<div class="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
+  <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]">Evidence library</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight">Curriculum</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Upload PDF guidance that investigations may retrieve for a specific learning objective. Every chunk retains its page locator.</p>
+    </div>
+    <%= link_to "Upload curriculum PDF", new_curriculum_document_path, class: "inline-flex items-center justify-center rounded-xl bg-[#173f3a] px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#22554e]" %>
+  </div>
+
+  <section class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <% if @documents.any? %>
+      <% @documents.each_with_index do |document, index| %>
+        <%= link_to curriculum_document_path(document), class: "group grid gap-4 px-5 py-5 hover:bg-slate-50/70 sm:grid-cols-[1.6fr_1fr_auto] sm:items-center #{'border-t border-slate-100' unless index.zero?}" do %>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="truncate font-bold text-slate-900"><%= document.title %></span>
+              <%= document_status_badge(document.status) %>
+            </div>
+            <p class="mt-1 truncate text-sm text-slate-500"><%= document.file.attached? ? document.file.filename : document.source_label %></p>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-700"><%= document.course.name %></p>
+            <p class="mt-1 text-xs text-slate-500"><%= document.learning_objective&.code || "General curriculum" %></p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-[#32766b] group-hover:translate-x-0.5">Open →</p>
+            <p class="mt-1 text-xs text-slate-400"><%= pluralize(document.chunk_count, "chunk") %></p>
+          </div>
+        <% end %>
+      <% end %>
+    <% else %>
+      <div class="px-6 py-16 text-center">
+        <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-[#dceae6] text-xl">↥</span>
+        <h2 class="mt-4 font-bold">No curriculum PDFs yet</h2>
+        <p class="mt-2 text-sm text-slate-500">Upload a text-based PDF to create grounded evidence for investigations.</p>
+      </div>
+    <% end %>
+  </section>
+</div>

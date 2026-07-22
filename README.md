@@ -7,6 +7,7 @@ LearningSignal helps educators notice meaningful changes in student mastery, inv
 - Password authentication using Rails' built-in session pattern
 - Organization and school tenancy with Pundit authorization
 - Deterministic mastery-decline signals
+- Curriculum PDF upload, duplicate detection, page-level extraction, chunking, and embeddings
 - Background investigations with live Turbo progress updates
 - Hybrid curriculum retrieval using PostgreSQL full-text signals and pgvector similarity
 - Strictly structured, citation-validated AI observations and intervention plans
@@ -78,6 +79,7 @@ docker build --tag learningsignal:local .
 ## Project map
 
 - `app/services/signals` — deterministic signal detection
+- `app/services/curriculum` — PDF extraction, page-grounded chunking, and embedding ingestion
 - `app/services/retrieval` — tenant-scoped hybrid evidence retrieval
 - `app/services/ai` — provider interface, drivers, and output schema
 - `app/services/investigations` — orchestration and grounding validation
