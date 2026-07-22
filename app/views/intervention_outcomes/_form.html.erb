@@ -1,0 +1,81 @@
+<% form_url = intervention_plan_intervention_outcome_path(@plan) %>
+<% form_method = @outcome.persisted? ? :patch : :post %>
+
+<%= form_with model: @outcome, url: form_url, method: form_method, class: "mt-8 space-y-6" do |form| %>
+  <% if @outcome.errors.any? %>
+    <div class="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">
+      <p class="font-bold">Please review the outcome details.</p>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <% @outcome.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <section class="grid gap-4 sm:grid-cols-2">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pre-intervention mastery</p>
+      <p class="mt-3 text-3xl font-semibold"><%= @baseline_mastery ? "#{@baseline_mastery.score.to_i}%" : "Not available" %></p>
+      <% if @baseline_mastery %><p class="mt-1 text-xs text-slate-500"><%= @baseline_mastery.source %> · <%= @baseline_mastery.observed_on.to_fs(:long) %></p><% end %>
+    </div>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <%= form.label :status, "Outcome status", class: "block text-xs font-bold uppercase tracking-wider text-slate-400" %>
+      <%= form.select :status, InterventionOutcome::STATUSES.map { |status| [ status.humanize, status ] }, {}, class: "mt-3 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %>
+      <p class="mt-2 text-xs text-slate-500">Completed outcomes require a follow-up score, effectiveness rating, and teacher assessment.</p>
+    </div>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#32766b]">Action completion</p>
+      <h2 class="mt-2 text-lg font-bold">What did the student complete?</h2>
+      <p class="mt-1 text-sm text-slate-500">Mark each completed step. Unchecked steps remain pending.</p>
+    </div>
+    <%= hidden_field_tag "intervention_outcome[completed_action_ids][]", "" %>
+    <div class="mt-5 space-y-3">
+      <% @plan.intervention_actions.each do |action| %>
+        <label class="flex cursor-pointer gap-4 rounded-xl border border-slate-200 p-4 hover:bg-slate-50">
+          <%= check_box_tag "intervention_outcome[completed_action_ids][]", action.id, action.completion_status == "completed", class: "mt-1 size-4 rounded border-slate-300 text-[#173f3a] focus:ring-[#32766b]" %>
+          <span><span class="block font-bold text-slate-800"><%= action.position %>. <%= action.title %></span><span class="mt-1 block text-sm leading-6 text-slate-500"><%= action.success_criteria %></span></span>
+        </label>
+      <% end %>
+    </div>
+    <label class="mt-5 flex cursor-pointer items-center gap-3 rounded-xl bg-[#f6f7f2] p-4 text-sm font-bold text-slate-700">
+      <%= form.check_box :student_completed, class: "size-4 rounded border-slate-300 text-[#173f3a] focus:ring-[#32766b]" %>
+      Student completed the overall intervention
+    </label>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#df6b57]">Follow-up evidence</p>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      <div>
+        <%= form.label :follow_up_mastery_score, "Enter a follow-up mastery score", class: "block text-sm font-bold text-slate-700" %>
+        <div class="relative mt-2"><%= form.number_field :follow_up_mastery_score, min: 0, max: 100, step: 0.01, placeholder: "0–100", class: "w-full rounded-xl border border-slate-300 px-4 py-3 pr-10 text-sm focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %><span class="pointer-events-none absolute right-4 top-3 text-sm font-bold text-slate-400">%</span></div>
+      </div>
+      <div>
+        <%= label_tag "intervention_outcome_mastery_snapshot_id", "Or select existing mastery evidence", class: "block text-sm font-bold text-slate-700" %>
+        <%= select_tag "intervention_outcome[mastery_snapshot_id]", options_for_select([[ "Use entered score", "" ]] + @mastery_snapshots.map { |snapshot| [ "#{snapshot.score.to_i}% · #{snapshot.source} · #{snapshot.observed_on.to_fs(:short)}", snapshot.id ] }), class: "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <%= form.label :effectiveness, "Effectiveness", class: "block text-sm font-bold text-slate-700" %>
+      <%= form.select :effectiveness, [[ "Select a rating", nil ], [ "Effective", "effective" ], [ "Ineffective", "ineffective" ]], {}, class: "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %>
+    </div>
+
+    <div class="mt-5">
+      <%= form.label :teacher_assessment, "Teacher assessment", class: "block text-sm font-bold text-slate-700" %>
+      <%= form.text_area :teacher_assessment, rows: 4, placeholder: "Describe the student’s response, transfer, and remaining needs.", class: "mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %>
+    </div>
+
+    <div class="mt-5">
+      <%= form.label :notes, "Notes (optional)", class: "block text-sm font-bold text-slate-700" %>
+      <%= form.text_area :notes, rows: 3, placeholder: "Add scheduling context or next steps.", class: "mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 focus:border-[#32766b] focus:outline-none focus:ring-2 focus:ring-[#32766b]/20" %>
+    </div>
+  </section>
+
+  <div class="flex justify-end gap-3">
+    <%= link_to "Cancel", investigation_path(@plan.investigation), class: "rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50" %>
+    <%= form.submit @outcome.persisted? ? "Update outcome" : "Save outcome", class: "cursor-pointer rounded-xl bg-[#173f3a] px-5 py-3 text-sm font-bold text-white hover:bg-[#245c54]" %>
+  </div>
+<% end %>

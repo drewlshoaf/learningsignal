@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :sections, foreign_key: :teacher_id, inverse_of: :teacher
   has_many :uploaded_curriculum_documents, class_name: "CurriculumDocument", foreign_key: :uploaded_by_id, inverse_of: :uploaded_by
   has_many :student_data_imports, foreign_key: :uploaded_by_id, inverse_of: :uploaded_by, dependent: :restrict_with_exception
+  has_many :recorded_intervention_outcomes, class_name: "InterventionOutcome", foreign_key: :recorded_by_id, inverse_of: :recorded_by, dependent: :restrict_with_exception
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

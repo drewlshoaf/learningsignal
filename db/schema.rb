@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_193000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -217,18 +217,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_150000) do
   end
 
   create_table "intervention_actions", force: :cascade do |t|
+    t.string "completion_status", default: "pending", null: false
     t.datetime "created_at", null: false
     t.string "duration", null: false
     t.text "instructions", null: false
     t.bigint "intervention_plan_id", null: false
     t.bigint "learning_objective_id"
     t.integer "position", null: false
+    t.boolean "required", default: true, null: false
     t.text "success_criteria", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["intervention_plan_id", "position"], name: "idx_on_intervention_plan_id_position_6783f419cf", unique: true
     t.index ["intervention_plan_id"], name: "index_intervention_actions_on_intervention_plan_id"
     t.index ["learning_objective_id"], name: "index_intervention_actions_on_learning_objective_id"
+    t.check_constraint "completion_status::text = ANY (ARRAY['pending'::character varying, 'completed'::character varying]::text[])", name: "intervention_actions_completion_status"
+  end
+
+  create_table "intervention_outcomes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "effectiveness"
+    t.decimal "follow_up_mastery_score", precision: 5, scale: 2
+    t.bigint "intervention_plan_id", null: false
+    t.text "notes"
+    t.bigint "organization_id", null: false
+    t.datetime "recorded_at", null: false
+    t.bigint "recorded_by_id", null: false
+    t.string "status", default: "in_progress", null: false
+    t.boolean "student_completed", default: false, null: false
+    t.text "teacher_assessment"
+    t.datetime "updated_at", null: false
+    t.index ["intervention_plan_id"], name: "index_intervention_outcomes_on_intervention_plan_id", unique: true
+    t.index ["organization_id", "status"], name: "index_intervention_outcomes_on_organization_id_and_status"
+    t.index ["organization_id"], name: "index_intervention_outcomes_on_organization_id"
+    t.index ["recorded_by_id"], name: "index_intervention_outcomes_on_recorded_by_id"
+    t.check_constraint "effectiveness IS NULL OR (effectiveness::text = ANY (ARRAY['effective'::character varying, 'ineffective'::character varying]::text[]))", name: "intervention_outcomes_effectiveness"
+    t.check_constraint "follow_up_mastery_score IS NULL OR follow_up_mastery_score >= 0::numeric AND follow_up_mastery_score <= 100::numeric", name: "intervention_outcomes_mastery_score"
+    t.check_constraint "status::text = ANY (ARRAY['in_progress'::character varying, 'completed'::character varying]::text[])", name: "intervention_outcomes_status"
   end
 
   create_table "intervention_plans", force: :cascade do |t|
@@ -531,6 +556,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_150000) do
   add_foreign_key "enrollments", "students"
   add_foreign_key "intervention_actions", "intervention_plans"
   add_foreign_key "intervention_actions", "learning_objectives"
+  add_foreign_key "intervention_outcomes", "intervention_plans"
+  add_foreign_key "intervention_outcomes", "organizations"
+  add_foreign_key "intervention_outcomes", "users", column: "recorded_by_id"
   add_foreign_key "intervention_plans", "investigations"
   add_foreign_key "intervention_plans", "organizations"
   add_foreign_key "investigation_observations", "investigations"

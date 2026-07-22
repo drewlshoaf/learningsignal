@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   end
   resources :investigations, only: :show
   resources :intervention_plans, only: %i[edit update] do
+    resource :intervention_outcome, only: %i[new create edit update]
     member do
       post :approve
       post :reject

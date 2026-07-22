@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
   has_many :assessments, dependent: :restrict_with_exception
   has_many :assessment_attempts, dependent: :restrict_with_exception
   has_many :question_responses, dependent: :restrict_with_exception
+  has_many :intervention_outcomes, dependent: :restrict_with_exception
 
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true
