@@ -7,7 +7,7 @@
     <div class="flex items-center gap-4">
       <span class="grid size-14 place-items-center rounded-2xl bg-[#dceae6] text-lg font-bold text-[#173f3a]"><%= initials(@signal.student.display_name) %></span>
       <div>
-        <h1 class="text-3xl font-semibold tracking-tight"><%= @signal.student.display_name %></h1>
+        <h1 class="text-3xl font-semibold tracking-tight"><%= link_to @signal.student.display_name, student_path(@signal.student), class: "hover:text-[#32766b]" %></h1>
         <p class="mt-1 text-sm text-slate-500"><%= @signal.section.course.name %> · <%= @signal.section.name %> · Synthetic record</p>
       </div>
     </div>

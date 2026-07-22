@@ -50,7 +50,7 @@ class StudentDataImportsController < ApplicationController
   def confirm
     authorize @data_import, :confirm?
     StudentDataImports::Apply.new(data_import: @data_import, request_id: request.request_id).call
-    redirect_to student_data_import_path(@data_import), notice: "Student data imported successfully."
+    redirect_to student_data_import_path(@data_import), notice: "Academic data imported successfully."
   rescue StandardError
     redirect_to student_data_import_path(@data_import), alert: "The import failed without saving partial student data."
   end

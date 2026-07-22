@@ -1,12 +1,12 @@
-<% content_for :title, "New student data import · LearningSignal" %>
+<% content_for :title, "New academic data import · LearningSignal" %>
 
 <div class="mx-auto max-w-3xl px-5 py-8 lg:px-8 lg:py-10">
   <%= link_to "← Import history", student_data_imports_path, class: "text-sm font-bold text-[#32766b] hover:text-[#173f3a]" %>
 
   <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
     <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]">Preview before applying</p>
-    <h1 class="mt-2 text-3xl font-semibold tracking-tight">Import student data</h1>
-    <p class="mt-2 text-sm leading-6 text-slate-500">Use synthetic student records only during local development. LearningSignal validates the complete CSV and saves nothing until you confirm the preview.</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight">Import academic data</h1>
+    <p class="mt-2 text-sm leading-6 text-slate-500">Use synthetic records only during local development. LearningSignal validates the complete CSV and saves nothing until you confirm the preview. Import assessment catalogs before their responses.</p>
 
     <% if @data_import.errors.any? %>
       <div class="mt-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -28,13 +28,13 @@
       <fieldset>
         <legend class="text-sm font-bold text-slate-700">Import type</legend>
         <div class="mt-2 grid gap-3 sm:grid-cols-2">
-          <% [["roster", "Roster and enrollment", "Create or update synthetic students and enroll them."], ["mastery", "Mastery history", "Add objective scores and rerun deterministic signals."]].each do |value, label, description| %>
+          <% StudentDataImport::IMPORT_TYPE_DETAILS.each do |value, details| %>
             <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 has-[:checked]:border-[#32766b] has-[:checked]:bg-[#f3f8f6]">
               <span class="flex items-start gap-3">
                 <%= form.radio_button :import_type, value, required: true, class: "mt-1 accent-[#32766b]" %>
                 <span>
-                  <span class="block text-sm font-bold text-slate-800"><%= label %></span>
-                  <span class="mt-1 block text-xs leading-5 text-slate-500"><%= description %></span>
+                  <span class="block text-sm font-bold text-slate-800"><%= details.fetch(:label) %></span>
+                  <span class="mt-1 block text-xs leading-5 text-slate-500"><%= details.fetch(:description) %></span>
                   <%= link_to "Download template", template_student_data_imports_path(import_type: value), class: "mt-2 inline-block text-xs font-bold text-[#32766b] hover:text-[#173f3a]" %>
                 </span>
               </span>

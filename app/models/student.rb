@@ -5,6 +5,7 @@ class Student < ApplicationRecord
   has_many :sections, through: :enrollments
   has_many :mastery_snapshots, dependent: :destroy
   has_many :student_signals, dependent: :destroy
+  has_many :assessment_attempts, dependent: :destroy
 
   validates :external_ref, :first_name, :last_initial, presence: true
   validates :external_ref, uniqueness: { scope: :organization_id }

@@ -10,6 +10,7 @@ module Investigations
     def call
       investigation.update!(status: "running", current_step: "collecting_evidence", started_at: Time.current)
       collect_performance_evidence
+      collect_assessment_evidence
       retrieve_curriculum_evidence
       investigation.update!(current_step: "analyzing_evidence")
       result = generate_result
@@ -60,6 +61,35 @@ module Investigations
           locator: "Mastery timeline · #{snapshot.observed_on.to_fs(:long)}",
           relevance_score: 1.0,
           metadata: { source: snapshot.source }
+        )
+      end
+    end
+
+    def collect_assessment_evidence
+      responses = QuestionResponse
+        .joins(:assessment_attempt, :assessment_question)
+        .where(
+          assessment_attempts: { student_id: investigation.student.id, section_id: investigation.section.id },
+          assessment_questions: { learning_objective_id: investigation.learning_objective.id }
+        )
+        .includes(:assessment_question, assessment_attempt: :assessment)
+        .order(submitted_at: :desc)
+        .limit(3)
+        .reverse
+
+      responses.each_with_index do |response, index|
+        attempt = response.assessment_attempt
+        question = response.assessment_question
+        investigation.retrieved_evidences.create!(
+          organization: investigation.organization,
+          citation_id: "A#{index + 1}",
+          evidence_type: "assessment_response",
+          source_type: "QuestionResponse",
+          source_id: response.id,
+          excerpt: "For #{question.prompt_reference}, the student answered #{response.answer.inspect}; this was #{response.correct? ? 'correct' : 'incorrect'} (#{response.points_earned.to_i}/#{question.maximum_points.to_i} points).",
+          locator: "#{attempt.assessment.title} · #{question.external_ref} · attempt #{attempt.attempt_number}",
+          relevance_score: 1.0,
+          metadata: { assessment_attempt_id: attempt.id, learning_objective_id: question.learning_objective_id }
         )
       end
     end

@@ -1,0 +1,3 @@
+assessment_external_ref,assessment_title,assessment_type,assessment_status,question_external_ref,objective_code,prompt_reference,question_type,maximum_points,answer_key
+ALG1-LIN-Q1,Linear Relationships Check,quiz,published,Q1,ALG1.LIN.3,Slope from points,multiple_choice,1,B
+ALG1-LIN-Q1,Linear Relationships Check,quiz,published,Q2,ALG1.LIN.3,Slope vs intercept,multiple_choice,1,C

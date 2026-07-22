@@ -22,6 +22,8 @@ This is an engineering baseline, not a claim of FERPA, COPPA, SOC 2, or other ce
 | Prompt injection in curriculum | Developer instructions, bounded retrieval, structured output, citation validation | Add ingestion scanning, content provenance, and red-team tests |
 | Malicious or duplicate uploads | PDF MIME/size validation, organization-scoped checksums, non-shell subprocess arguments | Add malware scanning, decompression limits, and quarantine storage |
 | Malformed or cross-tenant CSV imports | Exact headers, row limits, teacher-owned section scope, full preview validation, atomic apply | Add malware scanning and configurable district mappings |
+| Manipulated assessment totals | Response imports exclude score totals; correctness, points, percentages, and mastery are recalculated from stored answer keys | Add rubric-based manual grading workflow and dual-control answer-key changes |
+| Inappropriate student profile access | Student policy scopes records through active teacher-owned sections | Add district roles, enrollment-effective dates, and access-review reporting |
 | Secret disclosure | Ignored `.env`, empty template values, no stored provider response | Add managed secrets, secret scanning, and key rotation procedures |
 | Audit tampering | Per-organization SHA-256 hash chain and immutable original plan snapshot | Export to append-only storage with independent verification |
 
