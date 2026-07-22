@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -64,6 +64,65 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
     t.datetime "updated_at", null: false
     t.index ["investigation_id"], name: "index_agent_runs_on_investigation_id"
     t.index ["organization_id"], name: "index_agent_runs_on_organization_id"
+  end
+
+  create_table "assessment_attempts", force: :cascade do |t|
+    t.bigint "assessment_id", null: false
+    t.integer "attempt_number", null: false
+    t.datetime "created_at", null: false
+    t.string "external_ref", null: false
+    t.decimal "maximum_score", precision: 7, scale: 2, default: "0.0", null: false
+    t.bigint "organization_id", null: false
+    t.decimal "percentage", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "score", precision: 7, scale: 2, default: "0.0", null: false
+    t.bigint "section_id", null: false
+    t.datetime "started_at"
+    t.string "status", default: "submitted", null: false
+    t.bigint "student_id", null: false
+    t.datetime "submitted_at"
+    t.boolean "synthetic", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["assessment_id", "student_id", "section_id", "attempt_number"], name: "index_assessment_attempts_on_identity", unique: true
+    t.index ["assessment_id"], name: "index_assessment_attempts_on_assessment_id"
+    t.index ["organization_id", "section_id", "external_ref"], name: "index_assessment_attempts_on_tenant_section_external_ref", unique: true
+    t.index ["organization_id"], name: "index_assessment_attempts_on_organization_id"
+    t.index ["section_id"], name: "index_assessment_attempts_on_section_id"
+    t.index ["student_id", "submitted_at"], name: "index_assessment_attempts_on_student_id_and_submitted_at"
+    t.index ["student_id"], name: "index_assessment_attempts_on_student_id"
+  end
+
+  create_table "assessment_questions", force: :cascade do |t|
+    t.bigint "assessment_id", null: false
+    t.datetime "created_at", null: false
+    t.string "external_ref", null: false
+    t.bigint "learning_objective_id", null: false
+    t.decimal "maximum_points", precision: 7, scale: 2, null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.bigint "organization_id", null: false
+    t.string "prompt_reference", null: false
+    t.string "question_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assessment_id", "external_ref"], name: "index_assessment_questions_on_assessment_id_and_external_ref", unique: true
+    t.index ["assessment_id"], name: "index_assessment_questions_on_assessment_id"
+    t.index ["learning_objective_id"], name: "index_assessment_questions_on_learning_objective_id"
+    t.index ["organization_id", "learning_objective_id"], name: "index_assessment_questions_on_tenant_objective"
+    t.index ["organization_id"], name: "index_assessment_questions_on_organization_id"
+  end
+
+  create_table "assessments", force: :cascade do |t|
+    t.string "assessment_type", null: false
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.string "external_ref", null: false
+    t.decimal "maximum_score", precision: 7, scale: 2, default: "0.0", null: false
+    t.bigint "organization_id", null: false
+    t.string "status", default: "published", null: false
+    t.boolean "synthetic", default: true, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_assessments_on_course_id"
+    t.index ["organization_id", "external_ref"], name: "index_assessments_on_organization_id_and_external_ref", unique: true
+    t.index ["organization_id"], name: "index_assessments_on_organization_id"
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -280,6 +339,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end
 
+  create_table "question_responses", force: :cascade do |t|
+    t.bigint "assessment_attempt_id", null: false
+    t.bigint "assessment_question_id", null: false
+    t.boolean "correct", default: false, null: false
+    t.datetime "created_at", null: false
+    t.text "feedback"
+    t.bigint "organization_id", null: false
+    t.decimal "points_earned", precision: 7, scale: 2, default: "0.0", null: false
+    t.text "response_text"
+    t.string "selected_answer"
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["assessment_attempt_id", "assessment_question_id"], name: "index_question_responses_on_attempt_question", unique: true
+    t.index ["assessment_attempt_id"], name: "index_question_responses_on_assessment_attempt_id"
+    t.index ["assessment_question_id"], name: "index_question_responses_on_assessment_question_id"
+    t.index ["organization_id", "submitted_at"], name: "index_question_responses_on_organization_id_and_submitted_at"
+    t.index ["organization_id"], name: "index_question_responses_on_organization_id"
+  end
+
   create_table "retrieved_evidences", force: :cascade do |t|
     t.string "citation_id", null: false
     t.datetime "created_at", null: false
@@ -427,6 +505,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agent_runs", "investigations"
   add_foreign_key "agent_runs", "organizations"
+  add_foreign_key "assessment_attempts", "assessments"
+  add_foreign_key "assessment_attempts", "organizations"
+  add_foreign_key "assessment_attempts", "sections"
+  add_foreign_key "assessment_attempts", "students"
+  add_foreign_key "assessment_questions", "assessments"
+  add_foreign_key "assessment_questions", "learning_objectives"
+  add_foreign_key "assessment_questions", "organizations"
+  add_foreign_key "assessments", "courses"
+  add_foreign_key "assessments", "organizations"
   add_foreign_key "audit_events", "organizations"
   add_foreign_key "audit_events", "schools"
   add_foreign_key "audit_events", "users"
@@ -463,6 +550,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
   add_foreign_key "memberships", "users"
   add_foreign_key "observation_evidences", "investigation_observations"
   add_foreign_key "observation_evidences", "retrieved_evidences"
+  add_foreign_key "question_responses", "assessment_attempts"
+  add_foreign_key "question_responses", "assessment_questions"
+  add_foreign_key "question_responses", "organizations"
   add_foreign_key "retrieved_evidences", "investigations"
   add_foreign_key "retrieved_evidences", "organizations"
   add_foreign_key "schools", "organizations"

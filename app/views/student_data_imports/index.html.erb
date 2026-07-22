@@ -1,11 +1,11 @@
-<% content_for :title, "Student data imports · LearningSignal" %>
+<% content_for :title, "Academic data imports · LearningSignal" %>
 
 <div class="mx-auto max-w-6xl px-5 py-8 lg:px-8 lg:py-10">
   <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
     <div>
       <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]">Local data onboarding</p>
-      <h1 class="mt-2 text-3xl font-semibold tracking-tight">Student data imports</h1>
-      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Preview every row before LearningSignal changes a roster or mastery timeline. Imports are tenant-scoped, atomic, and audit recorded.</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight">Academic data imports</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Preview every row before LearningSignal changes rosters, mastery timelines, assessments, or responses. Imports are tenant-scoped, atomic, and audit recorded.</p>
     </div>
     <%= link_to "New CSV import", new_student_data_import_path, class: "inline-flex items-center justify-center rounded-xl bg-[#173f3a] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#22554e]" %>
   </div>
@@ -19,7 +19,7 @@
               <span class="font-bold text-slate-900"><%= data_import.source_filename %></span>
               <%= data_import_status_badge(data_import.status) %>
             </div>
-            <p class="mt-1 text-sm text-slate-500"><%= data_import.import_type.humanize %> · <%= data_import.section.course.name %> / <%= data_import.section.name %></p>
+            <p class="mt-1 text-sm text-slate-500"><%= data_import.import_type_label %> · <%= data_import.section.course.name %> / <%= data_import.section.name %></p>
           </div>
           <div class="text-sm text-slate-500">
             <p><span class="font-semibold text-slate-700"><%= data_import.total_rows %></span> rows</p>
@@ -31,8 +31,8 @@
     <% else %>
       <div class="px-6 py-14 text-center">
         <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf4f1] text-lg font-bold text-[#32766b]">CSV</div>
-        <h2 class="mt-4 font-bold">No student data imports yet</h2>
-        <p class="mt-2 text-sm text-slate-500">Start with a roster, then add objective-level mastery history.</p>
+        <h2 class="mt-4 font-bold">No academic data imports yet</h2>
+        <p class="mt-2 text-sm text-slate-500">Start with a roster, then add mastery history or assessment evidence.</p>
       </div>
     <% end %>
   </div>

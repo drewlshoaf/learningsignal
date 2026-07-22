@@ -5,7 +5,7 @@
 
   <div class="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
     <div>
-      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]"><%= @data_import.import_type.humanize %> import</p>
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]"><%= @data_import.import_type_label %> import</p>
       <h1 class="mt-2 text-3xl font-semibold tracking-tight"><%= @data_import.source_filename %></h1>
       <p class="mt-2 text-sm text-slate-500"><%= @data_import.section.course.name %> · <%= @data_import.section.name %></p>
     </div>

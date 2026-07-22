@@ -8,9 +8,9 @@ module Ai
       def name = "deterministic"
 
       def generate(model:, input:, schema:, instructions:, metadata: {})
-        citations = input.scan(/\b(?:P|C)\d+\b/).uniq
+        citations = input.scan(/\b(?:P|A|C)\d+\b/).uniq
         curriculum_citation = citations.find { |citation| citation.start_with?("C") } || citations.last
-        performance_citations = citations.select { |citation| citation.start_with?("P") }.first(2)
+        performance_citations = citations.select { |citation| citation.start_with?("P", "A") }.first(3)
 
         {
           data: {

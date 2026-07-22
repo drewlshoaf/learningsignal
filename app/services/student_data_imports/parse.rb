@@ -2,7 +2,9 @@ module StudentDataImports
   class Parse
     PARSERS = {
       "roster" => RosterParser,
-      "mastery" => MasteryParser
+      "mastery" => MasteryParser,
+      "assessment_catalog" => AssessmentCatalogParser,
+      "assessment_responses" => AssessmentResponsesParser
     }.freeze
 
     def initialize(data_import:)

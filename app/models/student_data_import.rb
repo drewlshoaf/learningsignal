@@ -1,5 +1,23 @@
 class StudentDataImport < ApplicationRecord
-  IMPORT_TYPES = %w[roster mastery].freeze
+  IMPORT_TYPE_DETAILS = {
+    "roster" => {
+      label: "Roster and enrollment",
+      description: "Create or update synthetic students and enroll them."
+    },
+    "mastery" => {
+      label: "Mastery history",
+      description: "Add objective scores and rerun deterministic signals."
+    },
+    "assessment_catalog" => {
+      label: "Assessments and questions",
+      description: "Define assessments, objective-mapped questions, and answer keys."
+    },
+    "assessment_responses" => {
+      label: "Attempts and responses",
+      description: "Import raw answers and calculate scores, mastery, and signals."
+    }
+  }.freeze
+  IMPORT_TYPES = IMPORT_TYPE_DETAILS.keys.freeze
   STATUSES = %w[pending previewed invalid applying completed failed].freeze
   MAX_FILE_SIZE = 5.megabytes
   ACCEPTED_CONTENT_TYPES = %w[text/csv application/csv application/vnd.ms-excel text/plain].freeze
@@ -21,6 +39,10 @@ class StudentDataImport < ApplicationRecord
 
   def confirmable?
     status == "previewed"
+  end
+
+  def import_type_label
+    IMPORT_TYPE_DETAILS.fetch(import_type).fetch(:label)
   end
 
   private

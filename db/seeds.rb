@@ -60,6 +60,78 @@ students.drop(1).each_with_index do |student, index|
   end
 end
 
+assessment = Assessment.find_or_initialize_by(organization: organization, external_ref: "ALG1-LIN-CHECK")
+assessment.assign_attributes(
+  course: course,
+  title: "Linear Relationships Check",
+  assessment_type: "quiz",
+  status: "published",
+  synthetic: true
+)
+assessment.save!
+
+question_data = [
+  [ "Q1", "Find slope from two points", "B", 1 ],
+  [ "Q2", "Distinguish slope from y-intercept", "C", 1 ],
+  [ "Q3", "Identify the rate of change", "4", 1 ]
+]
+questions = question_data.map do |external_ref, prompt_reference, answer_key, maximum_points|
+  assessment.assessment_questions.find_or_initialize_by(external_ref:).tap do |question|
+    question.assign_attributes(
+      organization: organization,
+      learning_objective: objective,
+      prompt_reference:,
+      question_type: "multiple_choice",
+      maximum_points:,
+      metadata: { "answer_key" => answer_key }
+    )
+    question.save!
+  end
+end
+assessment.recalculate_maximum_score!
+
+attempt = AssessmentAttempt.find_or_initialize_by(
+  organization: organization,
+  section: section,
+  external_ref: "SYN-1001-LIN-1"
+)
+attempt.assign_attributes(
+  student: maya,
+  assessment: assessment,
+  attempt_number: 1,
+  started_at: 1.day.ago.change(hour: 14),
+  submitted_at: 1.day.ago.change(hour: 14, min: 20),
+  status: "submitted",
+  synthetic: true
+)
+attempt.save!
+
+[ "B", "A", "0" ].each_with_index do |answer, index|
+  question = questions.fetch(index)
+  correct = answer.casecmp?(question.answer_key)
+  response = attempt.question_responses.find_or_initialize_by(assessment_question: question)
+  response.assign_attributes(
+    organization: organization,
+    selected_answer: answer,
+    correct:,
+    points_earned: correct ? question.maximum_points : 0,
+    submitted_at: attempt.submitted_at
+  )
+  response.save!
+end
+attempt.recalculate_score!
+
+assessment_snapshot = MasterySnapshot.find_or_initialize_by(
+  organization: organization,
+  section: section,
+  student: maya,
+  learning_objective: objective,
+  observed_on: attempt.submitted_at.to_date,
+  source: "Assessment attempt #{attempt.external_ref}"
+)
+assessment_snapshot.score = attempt.percentage
+assessment_snapshot.save!
+
 document = CurriculumDocument.find_or_create_by!(organization: organization, course: course, title: "Algebra I · Linear Relationships") do |record|
   record.source_label = "Northstar Mathematics Curriculum, Unit 2"
   record.status = "ready"
@@ -86,5 +158,5 @@ document.update!(chunk_count: chunks.size)
 
 Signals::Detect.new(section: section).call
 
-puts "Seeded LearningSignal with #{students.size} synthetic students and #{StudentSignal.count} academic signal."
+puts "Seeded LearningSignal with #{students.size} synthetic students, #{AssessmentAttempt.count} assessment attempt, and #{StudentSignal.count} academic signal."
 puts "Sign in with teacher@learningsignal.test / learning-signal-demo"

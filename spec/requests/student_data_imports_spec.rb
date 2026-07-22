@@ -97,4 +97,21 @@ RSpec.describe "Student data imports" do
     expect(response.media_type).to eq("text/csv")
     expect(response.body.lines.first.chomp).to eq("student_external_ref,objective_code,score,observed_on,source")
   end
+
+  it "serves exact assessment catalog and response templates" do
+    scenario = build_learning_scenario
+    sign_in(scenario.fetch(:teacher))
+
+    get template_student_data_imports_path(import_type: "assessment_catalog")
+    expect(response).to have_http_status(:ok)
+    expect(response.body.lines.first.chomp).to eq(
+      "assessment_external_ref,assessment_title,assessment_type,assessment_status,question_external_ref,objective_code,prompt_reference,question_type,maximum_points,answer_key"
+    )
+
+    get template_student_data_imports_path(import_type: "assessment_responses")
+    expect(response).to have_http_status(:ok)
+    expect(response.body.lines.first.chomp).to eq(
+      "attempt_external_ref,assessment_external_ref,student_external_ref,attempt_number,question_external_ref,selected_answer,response_text,submitted_at,status"
+    )
+  end
 end

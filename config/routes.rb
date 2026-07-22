@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     post :confirm, on: :member
     get :template, on: :collection
   end
+  resources :students, only: :show
   resources :student_signals, only: :show do
     resources :investigations, only: :create, shallow: true
   end

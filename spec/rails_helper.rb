@@ -46,6 +46,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.include ScenarioBuilder
   config.include StudentDataImportHelper
+  config.include AssessmentHelper
   config.infer_spec_type_from_file_location!
 
   # You can uncomment this line to turn off ActiveRecord support entirely.

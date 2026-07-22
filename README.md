@@ -9,6 +9,8 @@ LearningSignal helps educators notice meaningful changes in student mastery, inv
 - Deterministic mastery-decline signals
 - Curriculum PDF upload, duplicate detection, page-level extraction, chunking, and embeddings
 - Preview-first CSV imports for synthetic rosters, enrollments, and mastery timelines
+- Preview-first assessment catalogs and raw response imports with deterministic scoring
+- Tenant-scoped student academic profiles with objective mastery, responses, signals, and interventions
 - Background investigations with live Turbo progress updates
 - Hybrid curriculum retrieval using PostgreSQL full-text signals and pgvector similarity
 - Strictly structured, citation-validated AI observations and intervention plans
@@ -81,6 +83,7 @@ docker build --tag learningsignal:local .
 
 - `app/services/signals` — deterministic signal detection
 - `app/services/curriculum` — PDF extraction, page-grounded chunking, and embedding ingestion
+- `app/services/student_data_imports` — validated, atomic roster, mastery, assessment, and response imports
 - `app/services/retrieval` — tenant-scoped hybrid evidence retrieval
 - `app/services/ai` — provider interface, drivers, and output schema
 - `app/services/investigations` — orchestration and grounding validation
