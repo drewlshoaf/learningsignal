@@ -24,6 +24,7 @@ gem "neighbor"
 gem "pundit", "~> 2.5"
 gem "view_component", "~> 4.0"
 gem "aws-sdk-s3", require: false
+gem "csv", "~> 3.3"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

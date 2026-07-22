@@ -31,6 +31,7 @@ flowchart LR
 
 - `Signals` is deterministic and explainable; it never calls an AI provider.
 - `Curriculum` validates uploads, extracts PDF text with Poppler, preserves page locators, and computes embeddings in bounded batches.
+- `StudentDataImports` validates stored CSV sources, previews row-level errors, and applies tenant-scoped roster or mastery changes atomically.
 - `Retrieval` is scoped by organization and learning objective before similarity ranking.
 - `Ai` exposes a small `generate`/`embed` interface, keeping provider payloads out of domain services.
 - `Investigations` owns workflow state and grounding validation.

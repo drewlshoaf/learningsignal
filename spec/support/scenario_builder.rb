@@ -40,8 +40,8 @@ module ScenarioBuilder
       title: "Interpret slope as rate of change",
       description: "Calculate and interpret the average rate of change of a function."
     )
-    MasterySnapshot.create!(organization:, student:, learning_objective: objective, score: 78, observed_on: 14.days.ago.to_date, source: "assessment")
-    MasterySnapshot.create!(organization:, student:, learning_objective: objective, score: 61, observed_on: 2.days.ago.to_date, source: "assessment")
+    MasterySnapshot.create!(organization:, section:, student:, learning_objective: objective, score: 78, observed_on: 14.days.ago.to_date, source: "assessment")
+    MasterySnapshot.create!(organization:, section:, student:, learning_objective: objective, score: 61, observed_on: 2.days.ago.to_date, source: "assessment")
 
     document = CurriculumDocument.create!(
       organization:,

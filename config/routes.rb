@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   resources :curriculum_documents, only: %i[index show new create] do
     post :reprocess, on: :member
   end
+  resources :student_data_imports, only: %i[index show new create] do
+    post :confirm, on: :member
+    get :template, on: :collection
+  end
   resources :student_signals, only: :show do
     resources :investigations, only: :create, shallow: true
   end

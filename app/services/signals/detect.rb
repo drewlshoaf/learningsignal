@@ -18,7 +18,7 @@ module Signals
 
     def detect_for(student)
       section.course.learning_objectives.filter_map do |objective|
-        snapshots = student.mastery_snapshots.where(learning_objective: objective).order(:observed_on).last(2)
+        snapshots = student.mastery_snapshots.where(section:, learning_objective: objective).order(:observed_on).last(2)
         next if snapshots.length < 2
 
         previous, current = snapshots

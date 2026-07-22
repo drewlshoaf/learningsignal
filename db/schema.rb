@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -236,11 +236,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
     t.date "observed_on", null: false
     t.bigint "organization_id", null: false
     t.decimal "score", precision: 5, scale: 2, null: false
+    t.bigint "section_id", null: false
     t.string "source", null: false
     t.bigint "student_id", null: false
     t.datetime "updated_at", null: false
     t.index ["learning_objective_id"], name: "index_mastery_snapshots_on_learning_objective_id"
+    t.index ["organization_id", "section_id", "student_id", "learning_objective_id", "observed_on", "source"], name: "index_mastery_snapshots_on_import_identity", unique: true
     t.index ["organization_id"], name: "index_mastery_snapshots_on_organization_id"
+    t.index ["section_id"], name: "index_mastery_snapshots_on_section_id"
     t.index ["student_id", "learning_objective_id", "observed_on"], name: "index_mastery_timeline"
     t.index ["student_id"], name: "index_mastery_snapshots_on_student_id"
   end
@@ -327,6 +330,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
     t.string "user_agent"
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "student_data_imports", force: :cascade do |t|
+    t.jsonb "applied_summary", default: {}, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "error_count", default: 0, null: false
+    t.text "failure_message"
+    t.string "file_checksum", null: false
+    t.string "import_type", null: false
+    t.bigint "organization_id", null: false
+    t.jsonb "preview_rows", default: [], null: false
+    t.bigint "school_id", null: false
+    t.bigint "section_id", null: false
+    t.string "source_filename", null: false
+    t.string "status", default: "pending", null: false
+    t.integer "total_rows", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "uploaded_by_id", null: false
+    t.integer "valid_rows", default: 0, null: false
+    t.jsonb "validation_errors", default: [], null: false
+    t.index ["organization_id", "created_at"], name: "index_student_data_imports_on_organization_id_and_created_at"
+    t.index ["organization_id", "section_id", "import_type", "file_checksum"], name: "index_student_data_imports_on_source_identity", unique: true
+    t.index ["organization_id"], name: "index_student_data_imports_on_organization_id"
+    t.index ["school_id"], name: "index_student_data_imports_on_school_id"
+    t.index ["section_id"], name: "index_student_data_imports_on_section_id"
+    t.index ["uploaded_by_id"], name: "index_student_data_imports_on_uploaded_by_id"
   end
 
   create_table "student_signals", force: :cascade do |t|
@@ -426,6 +456,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
   add_foreign_key "learning_objectives", "organizations"
   add_foreign_key "mastery_snapshots", "learning_objectives"
   add_foreign_key "mastery_snapshots", "organizations"
+  add_foreign_key "mastery_snapshots", "sections"
   add_foreign_key "mastery_snapshots", "students"
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "schools"
@@ -440,6 +471,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_134000) do
   add_foreign_key "sections", "schools"
   add_foreign_key "sections", "users", column: "teacher_id"
   add_foreign_key "sessions", "users"
+  add_foreign_key "student_data_imports", "organizations"
+  add_foreign_key "student_data_imports", "schools"
+  add_foreign_key "student_data_imports", "sections"
+  add_foreign_key "student_data_imports", "users", column: "uploaded_by_id"
   add_foreign_key "student_signals", "learning_objectives"
   add_foreign_key "student_signals", "organizations"
   add_foreign_key "student_signals", "schools"

@@ -1,0 +1,39 @@
+<% content_for :title, "Student data imports · LearningSignal" %>
+
+<div class="mx-auto max-w-6xl px-5 py-8 lg:px-8 lg:py-10">
+  <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]">Local data onboarding</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight">Student data imports</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Preview every row before LearningSignal changes a roster or mastery timeline. Imports are tenant-scoped, atomic, and audit recorded.</p>
+    </div>
+    <%= link_to "New CSV import", new_student_data_import_path, class: "inline-flex items-center justify-center rounded-xl bg-[#173f3a] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#22554e]" %>
+  </div>
+
+  <div class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <% if @data_imports.any? %>
+      <% @data_imports.each_with_index do |data_import, index| %>
+        <%= link_to student_data_import_path(data_import), class: "grid gap-4 px-5 py-5 hover:bg-slate-50/70 sm:grid-cols-[1.4fr_1fr_auto] sm:items-center #{'border-t border-slate-100' unless index.zero?}" do %>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-slate-900"><%= data_import.source_filename %></span>
+              <%= data_import_status_badge(data_import.status) %>
+            </div>
+            <p class="mt-1 text-sm text-slate-500"><%= data_import.import_type.humanize %> · <%= data_import.section.course.name %> / <%= data_import.section.name %></p>
+          </div>
+          <div class="text-sm text-slate-500">
+            <p><span class="font-semibold text-slate-700"><%= data_import.total_rows %></span> rows</p>
+            <p class="mt-1 text-xs">Uploaded by <%= data_import.uploaded_by.name %></p>
+          </div>
+          <span class="text-sm font-bold text-[#32766b]">Review →</span>
+        <% end %>
+      <% end %>
+    <% else %>
+      <div class="px-6 py-14 text-center">
+        <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-[#edf4f1] text-lg font-bold text-[#32766b]">CSV</div>
+        <h2 class="mt-4 font-bold">No student data imports yet</h2>
+        <p class="mt-2 text-sm text-slate-500">Start with a roster, then add objective-level mastery history.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
