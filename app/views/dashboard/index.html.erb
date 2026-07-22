@@ -1,0 +1,64 @@
+<% content_for :title, "#{@section.course.name} · LearningSignal" %>
+
+<div class="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
+  <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]"><%= @section.academic_term %></p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight"><%= @section.course.name %> <span class="text-slate-400">·</span> <%= @section.name %></h1>
+      <p class="mt-2 text-sm text-slate-500">Good morning, <%= current_user.name.split.first %>. Here’s where attention may help most.</p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
+      <span class="font-semibold text-slate-800">Synthetic demo data</span><br>Safe for local development
+    </div>
+  </div>
+
+  <section class="mt-8 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Students</p>
+      <p class="mt-3 text-3xl font-semibold"><%= @students_count %></p>
+      <p class="mt-1 text-sm text-slate-500">Enrolled in this section</p>
+    </div>
+    <div class="rounded-2xl border border-rose-100 bg-[#fffaf8] p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-rose-400">High priority</p>
+      <p class="mt-3 text-3xl font-semibold text-rose-700"><%= @high_priority_count %></p>
+      <p class="mt-1 text-sm text-slate-500">Signals needing review</p>
+    </div>
+    <div class="rounded-2xl border border-emerald-100 bg-[#f8fcfa] p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-emerald-500">Ready for review</p>
+      <p class="mt-3 text-3xl font-semibold text-emerald-800"><%= @review_count %></p>
+      <p class="mt-1 text-sm text-slate-500">Draft intervention plans</p>
+    </div>
+  </section>
+
+  <section class="mt-9">
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-bold">Academic signals</h2>
+        <p class="mt-1 text-sm text-slate-500">Deterministic changes in mastery and engagement—not AI diagnoses.</p>
+      </div>
+      <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-500"><%= @signals.size %> open</span>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <% @signals.each_with_index do |signal, index| %>
+        <%= link_to student_signal_path(signal), class: "group grid gap-4 border-slate-100 px-5 py-5 hover:bg-slate-50/70 sm:grid-cols-[1.1fr_1.7fr_auto] sm:items-center #{'border-t' unless index.zero?}" do %>
+          <div class="flex items-center gap-3">
+            <span class="grid size-11 place-items-center rounded-full bg-[#dceae6] text-sm font-bold text-[#173f3a]"><%= initials(signal.student.display_name) %></span>
+            <span>
+              <span class="block font-bold text-slate-900"><%= signal.student.display_name %></span>
+              <span class="block text-xs text-slate-500"><%= signal.learning_objective.code %></span>
+            </span>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <%= priority_badge(signal.priority) %>
+              <span class="font-semibold text-slate-800"><%= signal.title %></span>
+            </div>
+            <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-500"><%= signal.explanation %></p>
+          </div>
+          <span class="text-sm font-bold text-[#32766b] group-hover:translate-x-0.5">Review →</span>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

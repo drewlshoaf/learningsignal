@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.2-pg17-bookworm
+        env:
+          POSTGRES_USER: learningsignal
+          POSTGRES_PASSWORD: learningsignal
+          POSTGRES_DB: learningsignal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U learningsignal -d learningsignal_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgresql://learningsignal:learningsignal@localhost:5432/learningsignal_test
+      TEST_DATABASE_URL: postgresql://learningsignal:learningsignal@localhost:5432/learningsignal_test
+      AI_PROVIDER: deterministic
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@a30dfa457ad68707b8b910ac3a244714b61c0626 # master, pinned 2026-07-22
+        with:
+          bundler-cache: true
+
+      - name: Prepare database
+        run: ./bin/rails db:prepare
+
+      - name: Check autoloading
+        run: ./bin/rails zeitwerk:check
+
+      - name: Run specs
+        run: bundle exec rspec
+
+      - name: Check style
+        run: bundle exec rubocop
+
+      - name: Scan application security
+        run: bundle exec brakeman --no-pager
+
+      - name: Audit dependencies
+        run: bundle exec bundler-audit check --update
+
+      - name: Build production image
+        run: docker build --tag learningsignal:ci .

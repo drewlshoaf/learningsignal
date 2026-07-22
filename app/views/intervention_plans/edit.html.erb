@@ -1,0 +1,41 @@
+<% content_for :title, "Edit intervention plan · LearningSignal" %>
+
+<div class="mx-auto max-w-4xl px-5 py-8 lg:px-8 lg:py-10">
+  <%= link_to "← Back to investigation", investigation_path(@plan.investigation), class: "text-sm font-semibold text-slate-500 hover:text-[#173f3a]" %>
+  <div class="mt-6">
+    <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#df6b57]">Teacher review</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight">Edit the intervention plan</h1>
+    <p class="mt-2 text-sm text-slate-500">Your edits are retained alongside the original AI draft.</p>
+  </div>
+
+  <%= form_with model: @plan, class: "mt-8 space-y-6" do |form| %>
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <%= form.label :summary, class: "mb-2 block text-sm font-bold text-slate-700" %>
+      <%= form.text_area :summary, rows: 3, class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %>
+    </section>
+
+    <%= form.fields_for :intervention_actions do |action_form| %>
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><h2 class="font-bold">Step <%= action_form.object.position %></h2><span class="text-xs font-semibold text-slate-400">Teacher editable</span></div>
+        <div class="space-y-4">
+          <div><%= action_form.label :title, class: "mb-2 block text-sm font-semibold text-slate-600" %><%= action_form.text_field :title, class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %></div>
+          <div><%= action_form.label :instructions, class: "mb-2 block text-sm font-semibold text-slate-600" %><%= action_form.text_area :instructions, rows: 3, class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %></div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div><%= action_form.label :duration, class: "mb-2 block text-sm font-semibold text-slate-600" %><%= action_form.text_field :duration, class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %></div>
+            <div><%= action_form.label :success_criteria, class: "mb-2 block text-sm font-semibold text-slate-600" %><%= action_form.text_field :success_criteria, class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %></div>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <%= form.label :teacher_notes, "Teacher notes", class: "mb-2 block text-sm font-bold text-slate-700" %>
+      <%= form.text_area :teacher_notes, rows: 4, placeholder: "Add context, accommodations already in place, or implementation notes…", class: "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none focus:border-[#32766b] focus:ring-3 focus:ring-[#32766b]/15" %>
+    </section>
+
+    <div class="flex justify-end gap-3">
+      <%= link_to "Cancel", investigation_path(@plan.investigation), class: "rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50" %>
+      <%= form.submit "Save plan edits", class: "cursor-pointer rounded-xl bg-[#173f3a] px-5 py-3 text-sm font-bold text-white hover:bg-[#245c54]" %>
+    </div>
+  <% end %>
+</div>

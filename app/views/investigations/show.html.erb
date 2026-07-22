@@ -1,0 +1,87 @@
+<% content_for :title, "Investigation · #{@investigation.student.display_name}" %>
+<%= turbo_stream_from @investigation %>
+
+<div class="mx-auto max-w-6xl px-5 py-8 lg:px-8 lg:py-10">
+  <%= link_to "← Back to signal", student_signal_path(@investigation.student_signal), class: "text-sm font-semibold text-slate-500 hover:text-[#173f3a]" %>
+  <div class="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#df6b57]">Evidence review</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight"><%= @investigation.student.display_name %> · <%= @investigation.learning_objective.title %></h1>
+      <p class="mt-2 text-sm text-slate-500">Investigation #<%= @investigation.id %> · Started <%= @investigation.created_at.to_fs(:long) %></p>
+    </div>
+    <% if @investigation.intervention_plan %><%= plan_status_badge(@investigation.intervention_plan.status) %><% end %>
+  </div>
+
+  <div class="mt-7"><%= render "status", investigation: @investigation %></div>
+
+  <% if @investigation.status == "completed" %>
+    <% observation = @investigation.investigation_observations.first %>
+    <div class="mt-7 grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#df6b57]">Grounded observation</p>
+          <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700"><%= observation.confidence.capitalize %> confidence</span>
+        </div>
+        <blockquote class="mt-4 text-lg font-semibold leading-8 text-slate-800">“<%= observation.statement %>”</blockquote>
+        <p class="mt-4 text-sm leading-6 text-slate-500"><strong>Limitation:</strong> <%= observation.limitations %></p>
+        <div class="mt-6 space-y-3">
+          <% observation.retrieved_evidences.each do |evidence| %>
+            <details class="group rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+              <summary class="cursor-pointer list-none text-sm font-bold text-slate-700"><span class="mr-2 rounded bg-[#dceae6] px-2 py-1 text-[11px] text-[#173f3a]"><%= evidence.citation_id %></span><%= evidence.locator %></summary>
+              <p class="mt-3 border-t border-slate-200 pt-3 text-sm leading-6 text-slate-600"><%= evidence.excerpt %></p>
+            </details>
+          <% end %>
+        </div>
+      </section>
+
+      <% plan = @investigation.intervention_plan %>
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center justify-between gap-4">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#32766b]">Proposed intervention</p>
+          <%= link_to "Edit plan", edit_intervention_plan_path(plan), class: "text-sm font-bold text-[#32766b] hover:text-[#173f3a]" %>
+        </div>
+        <h2 class="mt-4 text-xl font-bold leading-7"><%= plan.summary %></h2>
+        <ol class="mt-5 space-y-4">
+          <% plan.intervention_actions.each do |action| %>
+            <li class="flex gap-4 rounded-xl bg-[#f6f7f2] p-4">
+              <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#173f3a] text-xs font-bold text-white"><%= action.position %></span>
+              <div>
+                <div class="flex flex-wrap items-center gap-2"><h3 class="font-bold"><%= action.title %></h3><span class="text-xs font-semibold text-slate-400"><%= action.duration %></span></div>
+                <p class="mt-2 text-sm leading-6 text-slate-600"><%= action.instructions %></p>
+                <p class="mt-2 text-xs font-semibold text-[#32766b]">Success: <%= action.success_criteria %></p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+
+        <% if plan.status == "draft" %>
+          <div class="mt-6 grid grid-cols-2 gap-3 border-t border-slate-100 pt-5">
+            <%= button_to "Approve plan", approve_intervention_plan_path(plan), class: "w-full cursor-pointer rounded-xl bg-[#173f3a] px-4 py-3 text-sm font-bold text-white hover:bg-[#245c54]" %>
+            <%= button_to "Reject", reject_intervention_plan_path(plan), class: "w-full cursor-pointer rounded-xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50" %>
+          </div>
+        <% else %>
+          <div class="mt-6 rounded-xl bg-emerald-50 p-4 text-sm font-bold text-emerald-700">Teacher decision recorded: <%= plan.status.humanize %></div>
+        <% end %>
+      </section>
+    </div>
+
+    <% run = @investigation.agent_runs.last %>
+    <section class="mt-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div><p class="text-sm font-bold">AI run details</p><p class="mt-1 text-xs text-slate-500">Persisted for traceability; hidden reasoning is never displayed.</p></div>
+        <dl class="flex flex-wrap gap-5 text-xs">
+          <div><dt class="font-semibold text-slate-400">Provider</dt><dd class="mt-1 font-bold"><%= run.provider %></dd></div>
+          <div><dt class="font-semibold text-slate-400">Model</dt><dd class="mt-1 font-bold"><%= run.model %></dd></div>
+          <div><dt class="font-semibold text-slate-400">Prompt</dt><dd class="mt-1 font-bold"><%= run.prompt_version %></dd></div>
+          <div><dt class="font-semibold text-slate-400">Tokens</dt><dd class="mt-1 font-bold"><%= run.input_tokens + run.output_tokens %></dd></div>
+          <div><dt class="font-semibold text-slate-400">Latency</dt><dd class="mt-1 font-bold"><%= run.latency_ms %> ms</dd></div>
+        </dl>
+      </div>
+    </section>
+  <% else %>
+    <div class="mt-7 rounded-2xl border border-dashed border-slate-300 bg-white/50 p-10 text-center">
+      <p class="font-bold text-slate-700">The evidence workspace will appear here.</p>
+      <p class="mt-2 text-sm text-slate-500">This page updates automatically as the background workflow progresses.</p>
+    </div>
+  <% end %>
+</div>

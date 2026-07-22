@@ -1,0 +1,3 @@
+CREATE DATABASE learningsignal_test;
+CREATE DATABASE learningsignal_development_queue;
+CREATE DATABASE learningsignal_development_cable;

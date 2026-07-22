@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "LearningSignal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="LearningSignal">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-[#f6f7f2] text-slate-900 antialiased">
+    <% if authenticated? %>
+      <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur">
+        <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 lg:px-8">
+          <%= link_to root_path, class: "flex items-center gap-3" do %>
+            <span class="grid size-9 place-items-center rounded-xl bg-[#173f3a] text-sm font-bold text-white shadow-sm">LS</span>
+            <span>
+              <span class="block text-sm font-bold tracking-tight text-slate-900">LearningSignal</span>
+              <span class="block text-[11px] font-medium text-slate-500"><%= Current.school&.name %></span>
+            </span>
+          <% end %>
+          <nav class="flex items-center gap-3">
+            <%= link_to "Dashboard", root_path, class: "hidden rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:block" %>
+            <span class="hidden h-6 w-px bg-slate-200 sm:block"></span>
+            <span class="grid size-9 place-items-center rounded-full bg-[#dceae6] text-xs font-bold text-[#173f3a]" title="<%= current_user.name %>"><%= initials(current_user.name) %></span>
+            <%= button_to "Sign out", session_path, method: :delete, class: "rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100" %>
+          </nav>
+        </div>
+      </header>
+    <% end %>
+
+    <% if notice.present? || alert.present? %>
+      <div class="mx-auto mt-4 max-w-7xl px-5 lg:px-8">
+        <div class="rounded-xl border px-4 py-3 text-sm font-medium <%= alert.present? ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700' %>">
+          <%= alert || notice %>
+        </div>
+      </div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>

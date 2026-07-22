@@ -1,0 +1,29 @@
+<div id="investigation_status" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+  <% steps = [ ["collecting_evidence", "Collect evidence"], ["retrieving_curriculum", "Retrieve curriculum"], ["analyzing_evidence", "Analyze and validate"], ["ready_for_review", "Ready for review"] ] %>
+  <% active_index = steps.index { |step| step.first == investigation.current_step } || (investigation.status == "completed" ? steps.length - 1 : 0) %>
+  <div class="flex items-center justify-between gap-2">
+    <% steps.each_with_index do |(key, label), index| %>
+      <div class="flex min-w-0 flex-1 items-center gap-2">
+        <span class="grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold <%= index <= active_index ? 'bg-[#173f3a] text-white' : 'bg-slate-100 text-slate-400' %>"><%= index < active_index || investigation.status == 'completed' ? '✓' : index + 1 %></span>
+        <span class="hidden text-xs font-semibold <%= index <= active_index ? 'text-slate-700' : 'text-slate-400' %> md:block"><%= label %></span>
+        <% unless index == steps.length - 1 %><span class="h-px flex-1 bg-slate-200"></span><% end %>
+      </div>
+    <% end %>
+  </div>
+  <div class="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+    <div>
+      <p class="text-sm font-bold text-slate-800"><%= investigation.current_step.humanize %></p>
+      <p class="mt-0.5 text-xs text-slate-500">Status: <%= investigation.status.humanize %></p>
+    </div>
+    <% if investigation.status == "running" || investigation.status == "queued" %>
+      <span class="flex items-center gap-2 text-xs font-semibold text-[#32766b]"><span class="size-2 animate-pulse rounded-full bg-emerald-500"></span> Working</span>
+    <% elsif investigation.status == "failed" %>
+      <span class="text-xs font-semibold text-rose-600">Needs attention</span>
+    <% else %>
+      <span class="text-xs font-semibold text-emerald-700">Complete</span>
+    <% end %>
+  </div>
+  <% if investigation.failure_message.present? %>
+    <p class="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"><%= investigation.failure_message %></p>
+  <% end %>
+</div>
