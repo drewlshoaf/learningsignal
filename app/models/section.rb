@@ -6,6 +6,8 @@ class Section < ApplicationRecord
   has_many :enrollments, dependent: :destroy
   has_many :students, through: :enrollments
   has_many :student_signals, dependent: :destroy
+  has_many :mastery_snapshots, dependent: :destroy
+  has_many :student_data_imports, dependent: :restrict_with_exception
 
   validates :name, :academic_term, presence: true
 end

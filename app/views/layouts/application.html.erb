@@ -38,6 +38,7 @@
           <nav class="flex items-center gap-3">
             <%= link_to "Dashboard", root_path, class: "hidden rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:block" %>
             <%= link_to "Curriculum", curriculum_documents_path, class: "hidden rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:block" %>
+            <%= link_to "Data imports", student_data_imports_path, class: "hidden rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:block" %>
             <span class="hidden h-6 w-px bg-slate-200 sm:block"></span>
             <span class="grid size-9 place-items-center rounded-full bg-[#dceae6] text-xs font-bold text-[#173f3a]" title="<%= current_user.name %>"><%= initials(current_user.name) %></span>
             <%= button_to "Sign out", session_path, method: :delete, class: "rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100" %>

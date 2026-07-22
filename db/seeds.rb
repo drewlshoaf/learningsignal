@@ -47,17 +47,15 @@ end
 
 maya = students.first
 [ [ 3.weeks.ago.to_date, 78, "Unit 2 checkpoint" ], [ 2.days.ago.to_date, 61, "Linear relationships quiz" ] ].each do |observed_on, score, source|
-  MasterySnapshot.find_or_create_by!(organization: organization, student: maya, learning_objective: objective, observed_on: observed_on) do |record|
+  MasterySnapshot.find_or_create_by!(organization: organization, section: section, student: maya, learning_objective: objective, observed_on: observed_on, source: source) do |record|
     record.score = score
-    record.source = source
   end
 end
 
 students.drop(1).each_with_index do |student, index|
   [ [ 3.weeks.ago.to_date, 72 + index ], [ 2.days.ago.to_date, 75 + index ] ].each do |observed_on, score|
-    MasterySnapshot.find_or_create_by!(organization: organization, student: student, learning_objective: objective, observed_on: observed_on) do |record|
+    MasterySnapshot.find_or_create_by!(organization: organization, section: section, student: student, learning_objective: objective, observed_on: observed_on, source: "Synthetic mastery check") do |record|
       record.score = score
-      record.source = "Synthetic mastery check"
     end
   end
 end

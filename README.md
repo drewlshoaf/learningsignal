@@ -8,6 +8,7 @@ LearningSignal helps educators notice meaningful changes in student mastery, inv
 - Organization and school tenancy with Pundit authorization
 - Deterministic mastery-decline signals
 - Curriculum PDF upload, duplicate detection, page-level extraction, chunking, and embeddings
+- Preview-first CSV imports for synthetic rosters, enrollments, and mastery timelines
 - Background investigations with live Turbo progress updates
 - Hybrid curriculum retrieval using PostgreSQL full-text signals and pgvector similarity
 - Strictly structured, citation-validated AI observations and intervention plans

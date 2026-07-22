@@ -21,6 +21,7 @@ This is an engineering baseline, not a claim of FERPA, COPPA, SOC 2, or other ce
 | Autonomous harmful action | Draft-only output and explicit teacher approval/rejection | Add role-based approval policy and escalation rules |
 | Prompt injection in curriculum | Developer instructions, bounded retrieval, structured output, citation validation | Add ingestion scanning, content provenance, and red-team tests |
 | Malicious or duplicate uploads | PDF MIME/size validation, organization-scoped checksums, non-shell subprocess arguments | Add malware scanning, decompression limits, and quarantine storage |
+| Malformed or cross-tenant CSV imports | Exact headers, row limits, teacher-owned section scope, full preview validation, atomic apply | Add malware scanning and configurable district mappings |
 | Secret disclosure | Ignored `.env`, empty template values, no stored provider response | Add managed secrets, secret scanning, and key rotation procedures |
 | Audit tampering | Per-organization SHA-256 hash chain and immutable original plan snapshot | Export to append-only storage with independent verification |
 

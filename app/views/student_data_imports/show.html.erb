@@ -1,0 +1,79 @@
+<% content_for :title, "#{@data_import.source_filename} · LearningSignal" %>
+
+<div class="mx-auto max-w-5xl px-5 py-8 lg:px-8 lg:py-10">
+  <%= link_to "← Import history", student_data_imports_path, class: "text-sm font-bold text-[#32766b] hover:text-[#173f3a]" %>
+
+  <div class="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#df6b57]"><%= @data_import.import_type.humanize %> import</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight"><%= @data_import.source_filename %></h1>
+      <p class="mt-2 text-sm text-slate-500"><%= @data_import.section.course.name %> · <%= @data_import.section.name %></p>
+    </div>
+    <%= data_import_status_badge(@data_import.status) %>
+  </div>
+
+  <section class="mt-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <div class="grid gap-5 sm:grid-cols-3">
+      <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">Rows</p><p class="mt-2 text-2xl font-semibold"><%= @data_import.total_rows %></p></div>
+      <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">Valid</p><p class="mt-2 text-2xl font-semibold text-emerald-700"><%= @data_import.valid_rows %></p></div>
+      <div><p class="text-xs font-bold uppercase tracking-wider text-slate-400">Errors</p><p class="mt-2 text-2xl font-semibold <%= @data_import.error_count.positive? ? 'text-rose-700' : 'text-slate-900' %>"><%= @data_import.error_count %></p></div>
+    </div>
+    <p class="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-500">Uploaded by <%= @data_import.uploaded_by.name %> · <%= time_ago_in_words(@data_import.created_at) %> ago · Changes are audit recorded</p>
+  </section>
+
+  <% if @data_import.status == "invalid" %>
+    <section class="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-5 sm:p-6">
+      <h2 class="font-bold text-rose-800">Fix these CSV errors</h2>
+      <p class="mt-1 text-sm text-rose-700">Nothing was imported. Correct the source file and create a new preview.</p>
+      <div class="mt-4 overflow-hidden rounded-xl border border-rose-200 bg-white">
+        <% @data_import.validation_errors.each_with_index do |error, index| %>
+          <div class="grid grid-cols-[5rem_8rem_1fr] gap-3 px-4 py-3 text-sm <%= 'border-t border-rose-100' unless index.zero? %>">
+            <span class="font-mono text-xs text-rose-500">Line <%= error["line"] %></span>
+            <span class="font-semibold text-rose-800"><%= error["field"].humanize %></span>
+            <span class="text-rose-700"><%= error["message"] %></span>
+          </div>
+        <% end %>
+      </div>
+      <%= link_to "Upload corrected CSV", new_student_data_import_path(import_type: @data_import.import_type), class: "mt-5 inline-flex rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-rose-700 shadow-sm ring-1 ring-inset ring-rose-200 hover:bg-rose-100" %>
+    </section>
+  <% elsif @data_import.status == "completed" %>
+    <section class="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6">
+      <h2 class="font-bold text-emerald-900">Import completed</h2>
+      <p class="mt-1 text-sm text-emerald-700">All validated rows were applied in one transaction.</p>
+      <div class="mt-5 grid gap-3 sm:grid-cols-3">
+        <% @data_import.applied_summary.each do |label, value| %>
+          <div class="rounded-xl bg-white px-4 py-3 ring-1 ring-inset ring-emerald-200">
+            <p class="text-xs font-bold uppercase tracking-wider text-emerald-600"><%= label.humanize %></p>
+            <p class="mt-1 text-xl font-semibold text-emerald-900"><%= value %></p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% elsif @data_import.status == "failed" %>
+    <section class="mt-8 rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700">
+      <p class="font-bold">Import failed safely</p>
+      <p class="mt-1"><%= @data_import.failure_message %></p>
+    </section>
+  <% end %>
+
+  <% if @data_import.preview_rows.any? %>
+    <section class="mt-8">
+      <div class="mb-4 flex items-end justify-between gap-4">
+        <div><h2 class="text-lg font-bold">Row preview</h2><p class="mt-1 text-sm text-slate-500">Showing the first <%= @data_import.preview_rows.length %> valid rows.</p></div>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500"><tr><% @data_import.preview_rows.first.keys.reject { |key| key == "line" }.each do |key| %><th class="px-4 py-3"><%= key.humanize %></th><% end %></tr></thead>
+          <tbody class="divide-y divide-slate-100"><% @data_import.preview_rows.each do |row| %><tr><% row.except("line").each_value do |value| %><td class="whitespace-nowrap px-4 py-3 text-slate-700"><%= value %></td><% end %></tr><% end %></tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @data_import.confirmable? %>
+    <section class="mt-8 flex flex-col justify-between gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-5 sm:flex-row sm:items-center sm:p-6">
+      <div><h2 class="font-bold text-sky-900">Ready to import</h2><p class="mt-1 text-sm text-sky-700">The source will be validated again, then all <%= @data_import.valid_rows %> rows will commit together.</p></div>
+      <%= button_to "Confirm import", confirm_student_data_import_path(@data_import), method: :post, class: "rounded-xl bg-[#173f3a] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#22554e]" %>
+    </section>
+  <% end %>
+</div>
