@@ -17,6 +17,7 @@ LearningSignal helps educators notice meaningful changes in student mastery, inv
 - Teacher editing, approval, rejection, snapshots, and hash-chained audit events
 - Closed-loop intervention outcomes with action completion, follow-up mastery, effectiveness, and generated-vs-reviewed comparisons
 - Configurable deterministic, OpenAI, and OpenAI-compatible AI drivers
+- Version-controlled AI and retrieval evaluations with persisted metrics, reproducible reports, and CI quality gates
 
 AI output is advisory. It cannot diagnose a student, change grades, contact families, or execute an intervention without an educator's decision.
 
@@ -77,8 +78,11 @@ docker compose exec web bundle exec rspec
 docker compose exec web bundle exec rubocop
 docker compose exec web bundle exec brakeman --no-pager
 docker compose exec web bundle exec bundler-audit check --update
+docker compose exec web ./bin/rails evaluations:run SUITE=fast
 docker build --tag learningsignal:local .
 ```
+
+Run `SUITE=full` before a production release. Evaluation cases and machine-readable rubrics live in `config/evaluations`; Markdown and JSON regression reports are written to `tmp/evaluation-reports`. See [AI and retrieval evaluations](docs/architecture/evaluations.md) for provider comparison, pricing, threshold configuration, and the intentional regression demo.
 
 ## Project map
 
@@ -89,6 +93,7 @@ docker build --tag learningsignal:local .
 - `app/services/ai` — provider interface, drivers, and output schema
 - `app/services/investigations` — orchestration and grounding validation
 - `app/services/intervention_outcomes` — audited outcome recording and follow-up mastery synchronization
+- `app/services/evaluations` — versioned cases, scoring, persistence, reporting, and blocking quality gates
 - `app/services/audit` — tamper-evident event recording
 - `config/prompts` — versioned prompt assets
 - `docs/architecture` — system design and local workflow

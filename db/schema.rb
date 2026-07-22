@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_193000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_211500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -214,6 +214,54 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_193000) do
     t.index ["section_id", "student_id"], name: "index_enrollments_on_section_id_and_student_id", unique: true
     t.index ["section_id"], name: "index_enrollments_on_section_id"
     t.index ["student_id"], name: "index_enrollments_on_student_id"
+  end
+
+  create_table "evaluation_results", force: :cascade do |t|
+    t.string "case_id", null: false
+    t.string "case_type", null: false
+    t.integer "case_version", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "details", default: {}, null: false
+    t.text "error_message"
+    t.decimal "estimated_cost_usd", precision: 12, scale: 6, default: "0.0", null: false
+    t.bigint "evaluation_run_id", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.integer "latency_ms", default: 0, null: false
+    t.jsonb "metrics", default: {}, null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.string "status", null: false
+    t.jsonb "tags", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.index ["evaluation_run_id", "case_id"], name: "index_evaluation_results_on_evaluation_run_id_and_case_id", unique: true
+    t.index ["evaluation_run_id"], name: "index_evaluation_results_on_evaluation_run_id"
+    t.check_constraint "case_type::text = ANY (ARRAY['investigation'::character varying, 'retrieval'::character varying]::text[])", name: "evaluation_results_case_type_check"
+    t.check_constraint "status::text = ANY (ARRAY['passed'::character varying, 'failed'::character varying, 'errored'::character varying]::text[])", name: "evaluation_results_status_check"
+  end
+
+  create_table "evaluation_runs", force: :cascade do |t|
+    t.string "cases_digest", null: false
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.decimal "estimated_cost_usd", precision: 12, scale: 6, default: "0.0", null: false
+    t.datetime "finished_at"
+    t.jsonb "gate_failures", default: [], null: false
+    t.string "git_sha", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.integer "latency_ms", default: 0, null: false
+    t.jsonb "metrics", default: {}, null: false
+    t.string "model", null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.string "prompt_digest", null: false
+    t.string "prompt_version", null: false
+    t.string "provider", null: false
+    t.datetime "started_at", null: false
+    t.string "status", default: "running", null: false
+    t.string "suite", null: false
+    t.jsonb "thresholds", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_evaluation_runs_on_status"
+    t.index ["suite", "created_at"], name: "index_evaluation_runs_on_suite_and_created_at"
+    t.check_constraint "status::text = ANY (ARRAY['running'::character varying, 'passed'::character varying, 'failed'::character varying, 'errored'::character varying]::text[])", name: "evaluation_runs_status_check"
   end
 
   create_table "intervention_actions", force: :cascade do |t|
@@ -554,6 +602,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_193000) do
   add_foreign_key "enrollments", "organizations"
   add_foreign_key "enrollments", "sections"
   add_foreign_key "enrollments", "students"
+  add_foreign_key "evaluation_results", "evaluation_runs"
   add_foreign_key "intervention_actions", "intervention_plans"
   add_foreign_key "intervention_actions", "learning_objectives"
   add_foreign_key "intervention_outcomes", "intervention_plans"

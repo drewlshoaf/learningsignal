@@ -1,0 +1,72 @@
+cases:
+  - id: retrieve-slope-vs-intercept
+    version: 1
+    type: retrieval
+    tags: [fast, golden-query, slope]
+    suites: [fast, full]
+    input:
+      query: distinguish slope from y-intercept on a graph
+      limit: 2
+      expected_document_ids: [slope-labels, graph-example]
+      documents:
+        - id: slope-labels
+          content: Label rise, run, slope, and y-intercept separately when reading a graph.
+        - id: graph-example
+          content: This worked graph example contrasts the slope with the y-intercept.
+        - id: two-points
+          content: Subtract coordinates in a consistent order to calculate rate of change.
+        - id: quadratic-review
+          content: Factor quadratic expressions using common factors.
+    rubric:
+      metrics:
+        minimum:
+          retrieval_precision: 1.0
+          retrieval_recall: 1.0
+
+  - id: retrieve-slope-from-two-points
+    version: 1
+    type: retrieval
+    tags: [full, golden-query, slope]
+    suites: [full]
+    input:
+      query: calculate slope from two points with consistent subtraction order
+      limit: 2
+      expected_document_ids: [two-points, worked-ratio]
+      documents:
+        - id: two-points
+          content: When given two points, subtract coordinates in a consistent order before simplifying slope.
+        - id: worked-ratio
+          content: A worked example calculates the slope ratio from two coordinate points.
+        - id: slope-labels
+          content: Keep slope and the y-intercept labeled separately on a graph.
+        - id: quadratic-review
+          content: Factor quadratic expressions using common factors.
+    rubric:
+      metrics:
+        minimum:
+          retrieval_precision: 1.0
+          retrieval_recall: 1.0
+
+  - id: retrieve-representation-transfer
+    version: 1
+    type: retrieval
+    tags: [full, golden-query, reassessment]
+    suites: [full]
+    input:
+      query: assess slope understanding across graph table and equation representations
+      limit: 2
+      expected_document_ids: [representation-ticket, representation-guide]
+      documents:
+        - id: representation-ticket
+          content: Use a short exit ticket covering graph, table, and equation representations of slope.
+        - id: representation-guide
+          content: Compare slope across graphs, tables, and equations to verify transfer.
+        - id: two-points
+          content: Subtract coordinates consistently when calculating a ratio.
+        - id: quadratic-review
+          content: Factor quadratic expressions using common factors.
+    rubric:
+      metrics:
+        minimum:
+          retrieval_precision: 1.0
+          retrieval_recall: 1.0
