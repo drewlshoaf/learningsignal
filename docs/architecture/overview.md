@@ -15,6 +15,8 @@ flowchart LR
   Provider --> Validation["Schema + citation validation"]
   Validation --> Draft["Editable draft plan"]
   Draft --> Teacher
+  Teacher --> Outcome["Audited intervention outcome"]
+  Outcome --> DB
 ```
 
 ## Investigation sequence
@@ -25,7 +27,9 @@ flowchart LR
 4. The configured provider returns an observation and three actions under a strict schema.
 5. The grounding validator rejects missing or unknown citations before persistence.
 6. The teacher edits, approves, or rejects the draft. The original AI snapshot remains available.
-7. Material transitions are appended to the organization's hash-chained audit history.
+7. For an approved plan, the teacher records action completion, follow-up mastery, effectiveness, and an assessment. Entered mastery becomes profile evidence; an existing post-approval mastery record can be selected instead.
+8. Completed outcomes resolve the originating signal and appear in before/after comparisons. In-progress outcomes are excluded from aggregate effectiveness metrics.
+9. Material transitions are appended to the organization's hash-chained audit history.
 
 ## Boundaries
 
@@ -36,6 +40,7 @@ flowchart LR
 - `Retrieval` is scoped by organization and learning objective before similarity ranking.
 - `Ai` exposes a small `generate`/`embed` interface, keeping provider payloads out of domain services.
 - `Investigations` owns workflow state and grounding validation.
+- `InterventionOutcomes` owns the approved-plan feedback loop, action completion, follow-up mastery synchronization, and signal closure.
 - `Audit` records security- and decision-relevant transitions.
 - Pundit policies constrain application reads and writes to a user's organizations.
 

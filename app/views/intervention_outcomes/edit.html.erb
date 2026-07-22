@@ -1,0 +1,11 @@
+<% content_for :title, "Update intervention outcome · LearningSignal" %>
+
+<div class="mx-auto max-w-4xl px-5 py-8 lg:px-8 lg:py-10">
+  <%= link_to "← Back to investigation", investigation_path(@plan.investigation), class: "text-sm font-semibold text-slate-500 hover:text-[#173f3a]" %>
+  <div class="mt-6">
+    <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#df6b57]">Close the feedback loop</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight">Update intervention outcome</h1>
+    <p class="mt-2 text-sm text-slate-500"><%= @plan.investigation.student.display_name %> · Last recorded <%= @outcome.recorded_at.to_fs(:long) %></p>
+  </div>
+  <%= render "form" %>
+</div>

@@ -39,6 +39,28 @@ module ApplicationHelper
     content_tag :span, status.humanize, class: "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset #{classes.fetch(status)}"
   end
 
+  def outcome_status_badge(status)
+    classes = {
+      "in_progress" => "bg-amber-50 text-amber-700 ring-amber-600/20",
+      "completed" => "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+    }
+    content_tag :span, status.humanize, class: "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset #{classes.fetch(status)}"
+  end
+
+  def effectiveness_badge(effectiveness)
+    return content_tag(:span, "Not rated", class: "text-xs font-semibold text-slate-400") if effectiveness.blank?
+
+    classes = effectiveness == "effective" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+    content_tag :span, effectiveness.humanize, class: "inline-flex rounded-full px-2.5 py-1 text-xs font-bold #{classes}"
+  end
+
+  def mastery_change_label(before_score, after_score)
+    return "—" if before_score.blank? || after_score.blank?
+
+    change = after_score.to_f - before_score.to_f
+    "#{change.positive? ? '+' : ''}#{change.round}%"
+  end
+
   def initials(name)
     name.split.filter_map { |part| part.first }.first(2).join.upcase
   end

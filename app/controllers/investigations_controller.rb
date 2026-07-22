@@ -12,7 +12,7 @@ class InvestigationsController < ApplicationController
       :agent_runs,
       :retrieved_evidences,
       investigation_observations: :retrieved_evidences,
-      intervention_plan: :intervention_actions
+      intervention_plan: [ :intervention_actions, :intervention_outcome ]
     ).find(params[:id])
     authorize @investigation
   end

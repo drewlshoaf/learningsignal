@@ -15,6 +15,7 @@ LearningSignal helps educators notice meaningful changes in student mastery, inv
 - Hybrid curriculum retrieval using PostgreSQL full-text signals and pgvector similarity
 - Strictly structured, citation-validated AI observations and intervention plans
 - Teacher editing, approval, rejection, snapshots, and hash-chained audit events
+- Closed-loop intervention outcomes with action completion, follow-up mastery, effectiveness, and generated-vs-reviewed comparisons
 - Configurable deterministic, OpenAI, and OpenAI-compatible AI drivers
 
 AI output is advisory. It cannot diagnose a student, change grades, contact families, or execute an intervention without an educator's decision.
@@ -87,6 +88,7 @@ docker build --tag learningsignal:local .
 - `app/services/retrieval` — tenant-scoped hybrid evidence retrieval
 - `app/services/ai` — provider interface, drivers, and output schema
 - `app/services/investigations` — orchestration and grounding validation
+- `app/services/intervention_outcomes` — audited outcome recording and follow-up mastery synchronization
 - `app/services/audit` — tamper-evident event recording
 - `config/prompts` — versioned prompt assets
 - `docs/architecture` — system design and local workflow

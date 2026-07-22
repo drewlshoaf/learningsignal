@@ -156,7 +156,41 @@ embeddings = provider.embed(model: Ai::Configuration.embedding_model, inputs: ch
 chunks.zip(embeddings).each { |chunk, embedding| chunk.update!(embedding: embedding) if chunk.embedding.blank? }
 document.update!(chunk_count: chunks.size)
 
-Signals::Detect.new(section: section).call
+signal = Signals::Detect.new(section: section).call.first || section.student_signals.order(:created_at).first
 
-puts "Seeded LearningSignal with #{students.size} synthetic students, #{AssessmentAttempt.count} assessment attempt, and #{StudentSignal.count} academic signal."
+investigation = signal.investigations.find_or_initialize_by(teacher: teacher)
+if investigation.new_record?
+  investigation.assign_attributes(
+    organization: organization,
+    school: school,
+    status: "queued",
+    current_step: "queued"
+  )
+  investigation.save!
+end
+Investigations::Orchestrator.new(investigation: investigation, provider: provider).call unless investigation.status == "completed"
+
+plan = investigation.intervention_plan
+unless plan.status == "approved"
+  plan.update!(status: "approved", approved_at: 1.day.ago)
+  plan.teacher_decisions.find_or_create_by!(organization: organization, user: teacher, decision: "approved") do |decision|
+    decision.plan_snapshot = plan.snapshot
+  end
+end
+
+InterventionOutcomes::Record.call(
+  outcome: plan.intervention_outcome || plan.build_intervention_outcome,
+  actor: teacher,
+  attributes: {
+    status: "completed",
+    effectiveness: "effective",
+    follow_up_mastery_score: 76,
+    teacher_assessment: "Maya now distinguishes slope from the y-intercept across graphs and equations. One more table-based check will confirm transfer.",
+    student_completed: true,
+    notes: "Continue with the scheduled reassessment next week."
+  },
+  completed_action_ids: plan.intervention_actions.limit(2).pluck(:id)
+)
+
+puts "Seeded LearningSignal with #{students.size} synthetic students, #{AssessmentAttempt.count} assessment attempt, #{StudentSignal.count} academic signal, and #{InterventionOutcome.count} intervention outcome."
 puts "Sign in with teacher@learningsignal.test / learning-signal-demo"
